@@ -31,7 +31,7 @@ model = dict(
 
     # img
     img_backbone=dict(
-        type='SwinTransformer',
+        type='CrossWindowTransformer',
         embed_dims=96,
         depths=[2, 2, 6, 2],
         num_heads=[3, 6, 12, 24],
@@ -59,19 +59,15 @@ model = dict(
         point_cloud_range=point_cloud_range,
         max_num_points=-1, voxel_size=voxel_size, max_voxels=(-1, -1)),
     pts_voxel_encoder=dict(
-        type='DynamicVFE',
-        in_channels=5 ,
-        feat_channels=[64, 64],
-        with_distance=False,
-        voxel_size=voxel_size,
-        with_cluster_center=True,
-        with_voxel_center=True,
-        point_cloud_range=point_cloud_range,
-        norm_cfg=dict(type='naiveSyncBN1d', eps=1e-3, momentum=0.01),
+        type='SphericalFusionVFE',
+        in_channels=5,
+        fuse_mode = 'concat',
+        use_normalize=True,
+        r_max=80.0,
     ),
     pts_middle_encoder=dict(
         type='SparseEncoder',
-        in_channels=64,
+        in_channels=8,   
         sparse_shape=[41, voxel_shape, voxel_shape],
         base_channels=32,
         output_channels=256,
